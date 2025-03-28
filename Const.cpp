@@ -15,12 +15,12 @@ namespace CONSTS
 
 	namespace PADDLE
 	{
-		const int SPEED {10};
+		const int SPEED {15};
 	}
 
 	namespace BALL
 	{
-		const float SIZE {10};
-		const float SPEED {6};
+		const float SIZE {15};
+		const float SPEED {10};
 	}
 }
