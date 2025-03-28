@@ -4,6 +4,7 @@
 
 #include "Ball.h"
 #include "Player.h"
+#include "SceneManager.h"
 
 using namespace std;
 
@@ -18,18 +19,25 @@ float unitX = width / 70;
 
 int topRectangleHeight = 2*unitY;
 
-Vector2 playableAreaSize = { 70*unitX, 36 * unitY };
-Vector2 playableAreaPos = { 0, 2*unitY };
+Vector2 playableAreaSize = { 70*unitX, 40 * unitY };
+Vector2 playableAreaPos = { 0, 0 };
 
 Color leftColor = RED;
 Color rightColor = BLUE;
 
-Font ft;
+SceneManager sceneManager = SceneManager();
+
+Texture backgroundText;
+Texture netText;
+
+Font ft1;
+Font ft2;
+
+Music music;
 
 Player leftPaddle = Player({ unitX * 2, unitY * 14 }, { unitX * 2, unitY * 10 }, 10, playableAreaPos, playableAreaSize, KEY_W, KEY_S, leftColor);
 Player rightPaddle = Player({ unitX * 66, unitY * 14 }, { unitX * 2, unitY * 10 }, 10, playableAreaPos, playableAreaSize, KEY_UP, KEY_DOWN, rightColor);
-
-Ball ball = Ball( unitY, 10, playableAreaSize, playableAreaPos, &leftPaddle, &rightPaddle);
+Ball ball = Ball(unitY, 10, playableAreaSize, playableAreaPos, &leftPaddle, &rightPaddle);
 
 void Init();
 void Update();
@@ -38,6 +46,7 @@ void UpdateDraw();
 void DeInit();
 
 void ResetTerrain(float dir);
+Texture LoadTextureFromSource(const char *source);
 
 int main() {   
     
@@ -57,46 +66,115 @@ int main() {
 void Init()
 {
     InitWindow(width, height, "");
+    InitAudioDevice();
     SetTargetFPS(60);
 
-    ft = LoadFont("resources/fonts/jupiter_crash.png");
+    music = LoadMusicStream("resources/sound/celeste_music.mp3");
+
+    PlayMusicStream(music);
+
+    ft1 = LoadFont("resources/fonts/pixantiqua.png");
+    ft2 = LoadFont("resources/fonts/jupiter_crash.png");
+
+    backgroundText = LoadTextureFromSource("resources/img/summit_begin.png");
+    netText = LoadTextureFromSource("resources/img/net.png");
+
 }
 
 void Update()
 {
-    ball.Update();
-    leftPaddle.Update();
-    rightPaddle.Update();
+    UpdateMusicStream(music);
 
-    if (ball.isOnBorder(true))
+    switch (sceneManager.GetCurrentScene())
     {
-        rightScore++;
-        ResetTerrain(1.0f);
-    }
-    else if (ball.isOnBorder(false))
-    {
-        leftScore++;
-        ResetTerrain(-1.0f);
-    }
+    case Scenes::Menu:
+        if(IsKeyPressed(KEY_ENTER))
+        {
+            sceneManager.SetCurrentScene(Scenes::TwoPlayer);
+            UnloadTexture(backgroundText);
+            backgroundText = LoadTextureFromSource("resources/img/core.png");
+            leftScore = 0;
+            rightScore = 0;
 
-    if (leftScore == 9 || rightScore == 9)
-    {
-        DeInit();
+            leftPaddle = Player({ unitX * 2, unitY * 14 }, { unitX * 2, unitY * 10 }, 10, playableAreaPos, playableAreaSize, KEY_W, KEY_S, leftColor);
+            rightPaddle = Player({ unitX * 66, unitY * 14 }, { unitX * 2, unitY * 10 }, 10, playableAreaPos, playableAreaSize, KEY_UP, KEY_DOWN, rightColor);
+            ball = Ball(unitY, 10, playableAreaSize, playableAreaPos, &leftPaddle, &rightPaddle);
+        }
+        break;
+
+    case Scenes::TwoPlayer:
+        ball.Update();
+        leftPaddle.Update();
+        rightPaddle.Update();
+
+        if (ball.isOnBorder(true))
+        {
+            rightScore++;
+            ResetTerrain(1.0f);
+        }
+        else if (ball.isOnBorder(false))
+        {
+            leftScore++;
+            ResetTerrain(-1.0f);
+        }
+
+        if (leftScore == 1 || rightScore == 1)
+        {
+            sceneManager.SetCurrentScene(Scenes::Score);
+            UnloadTexture(backgroundText);
+            backgroundText = LoadTextureFromSource("resources/img/summit_end.png");
+        }
+        break;
+
+    case Scenes::Score : 
+        if (IsKeyPressed(KEY_ENTER))
+        {
+            sceneManager.SetCurrentScene(Scenes::Menu);
+            UnloadTexture(backgroundText);
+            backgroundText = LoadTextureFromSource("resources/img/summit_begin.png");
+        }
+        break;
     }
 }
 
 void Draw()
 {
-    DrawRectangle(unitX * 34, 0, unitX * 2, height, GRAY);
+    DrawTextureEx(backgroundText, { 0, 0 }, 0, 1, WHITE);
 
-    ball.Draw();
-    leftPaddle.Draw();
-    rightPaddle.Draw();
+    switch (sceneManager.GetCurrentScene())
+    {
+    case Scenes::Menu:
+        DrawTextEx(ft1, "Cool Pong", { 19 * unitX, 15 * unitY }, 7 * unitX, unitX, DARKGRAY);
+        DrawTextEx(ft1, "Press [Enter]", { 25 * unitX, 25 * unitY }, 2 * unitX, unitX, DARKGRAY);
+        break;
 
-    DrawRectangle(0, 0, width, topRectangleHeight, DARKGRAY);
-    DrawRectangle(0, height - topRectangleHeight, width, topRectangleHeight, DARKGRAY);
-    DrawTextEx(ft, TextFormat("%i", leftScore), { 30 * unitX, 2 * unitY }, 10 * unitX, 0, leftColor);
-    DrawTextEx(ft, TextFormat("%i", rightScore), { 37 * unitX, 2 * unitY }, 10 * unitX, 0, rightColor);
+    case Scenes::TwoPlayer:
+        DrawTextureEx(netText, { 34 * unitX, 0 }, 0, 1, GRAY);
+
+        ball.Draw();
+        leftPaddle.Draw();
+        rightPaddle.Draw();
+
+        DrawTextEx(ft2, TextFormat("%i", leftScore), { 30 * unitX, 2 * unitY }, 10 * unitX, 0, leftColor);
+        DrawTextEx(ft2, TextFormat("%i", rightScore), { 37 * unitX, 2 * unitY }, 10 * unitX, 0, rightColor);
+        break;
+
+    case Scenes::Score:
+
+        if (leftScore == 1)
+        {
+            DrawTextEx(ft1, "Left  Win", { 19 * unitX, 15 * unitY }, 7 * unitX, unitX, leftColor);
+            DrawTextEx(ft1, "Press [Enter]", { 25 * unitX, 25 * unitY }, 2 * unitX, unitX, leftColor);
+        }
+        else
+        {
+            DrawTextEx(ft1, "Right Win", { 19 * unitX, 15 * unitY }, 7 * unitX, unitX, rightColor);
+            DrawTextEx(ft1, "Press [Enter]", { 25 * unitX, 25 * unitY }, 2 * unitX, unitX, rightColor);
+        }
+
+        break;
+
+    }
 }
 
 void UpdateDraw()
@@ -113,11 +191,29 @@ void UpdateDraw()
 
 void DeInit()
 {
-    UnloadFont(ft);
+    UnloadFont(ft1);
+    UnloadFont(ft2);
+
+    UnloadTexture(backgroundText);
+    UnloadTexture(netText);
+    UnloadMusicStream(music);
+
     CloseWindow();
+
+    CloseAudioDevice();
 }
 
 void ResetTerrain(float dir)
 {
     ball.Reset(dir);
+}
+
+Texture LoadTextureFromSource(const char *source)
+{
+    Image img = LoadImage(source);
+    Texture text = LoadTextureFromImage(img);
+
+    UnloadImage(img);
+
+    return text;
 }
