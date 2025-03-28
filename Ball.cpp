@@ -2,11 +2,11 @@
 
 #include <iostream>
 
-Ball::Ball(float size, float speed, Vector2 screenSize, Vector2 screenPos, Paddle* leftPaddle, Paddle* rightPaddle) :
-	mBallSize{ size },
+Ball::Ball(Vector2 screenSize, Vector2 screenPos, Paddle* leftPaddle, Paddle* rightPaddle) :
+	mBallSize{ CONSTS::BALL::SIZE },
 	mBallPos{ (float)screenSize.x / 2, (float)screenSize.y / 2 },
-	mBaseSpeed{ speed },
-	mBallSpeed{ speed },
+	mBaseSpeed{ CONSTS::BALL::SPEED },
+	mBallSpeed{ CONSTS::BALL::SPEED },
 	mScreenSize{ screenSize.x, screenSize.y },
 	mScreenPos{ screenPos },
 	mNextCollisionIsLeft{ false }

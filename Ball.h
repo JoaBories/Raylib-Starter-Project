@@ -5,6 +5,7 @@
 #include "IObject.h"
 #include "Utilities.h"
 #include "Paddle.h"
+#include "Const.h"
 
 using Util::Utilities;
 
@@ -22,7 +23,7 @@ private :
 	bool mNextCollisionIsLeft;
 
 public:
-	Ball(float size, float speed, Vector2 screenSize, Vector2 screenPos, Paddle* leftPaddle, Paddle* rightPaddle);
+	Ball(Vector2 screenSize, Vector2 screenPos, Paddle* leftPaddle, Paddle* rightPaddle);
 	bool isOnBorder(bool left) const;
 	void Reset(float dir);
 

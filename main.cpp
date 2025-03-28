@@ -11,13 +11,8 @@ using namespace std;
 int leftScore = 0;
 int rightScore = 0;
 
-int width = 1280;
-int height = 720;
-
-float unitY = height / 40;
-float unitX = width / 70;
-
-int topRectangleHeight = 2*unitY;
+float unitY = CONSTS::SCREEN::SIZE_X / 40;
+float unitX = CONSTS::SCREEN::SIZE_Y / 70;
 
 Vector2 playableAreaSize = { 70*unitX, 40 * unitY };
 Vector2 playableAreaPos = { 0, 0 };
@@ -37,7 +32,7 @@ Music music;
 
 Player leftPaddle = Player({ unitX * 2, unitY * 14 }, { unitX * 2, unitY * 10 }, 10, playableAreaPos, playableAreaSize, KEY_W, KEY_S, leftColor);
 Player rightPaddle = Player({ unitX * 66, unitY * 14 }, { unitX * 2, unitY * 10 }, 10, playableAreaPos, playableAreaSize, KEY_UP, KEY_DOWN, rightColor);
-Ball ball = Ball(unitY, 10, playableAreaSize, playableAreaPos, &leftPaddle, &rightPaddle);
+Ball ball = Ball(playableAreaSize, playableAreaPos, &leftPaddle, &rightPaddle);
 
 void Init();
 void Update();
@@ -65,7 +60,7 @@ int main() {
 
 void Init()
 {
-    InitWindow(width, height, "");
+    InitWindow(CONSTS::SCREEN::SIZE_X, CONSTS::SCREEN::SIZE_Y, "COOL PONG");
     InitAudioDevice();
     SetTargetFPS(60);
 
@@ -98,7 +93,7 @@ void Update()
 
             leftPaddle = Player({ unitX * 2, unitY * 14 }, { unitX * 2, unitY * 10 }, 10, playableAreaPos, playableAreaSize, KEY_W, KEY_S, leftColor);
             rightPaddle = Player({ unitX * 66, unitY * 14 }, { unitX * 2, unitY * 10 }, 10, playableAreaPos, playableAreaSize, KEY_UP, KEY_DOWN, rightColor);
-            ball = Ball(unitY, 10, playableAreaSize, playableAreaPos, &leftPaddle, &rightPaddle);
+            ball = Ball(playableAreaSize, playableAreaPos, &leftPaddle, &rightPaddle);
         }
         break;
 
@@ -118,7 +113,7 @@ void Update()
             ResetTerrain(-1.0f);
         }
 
-        if (leftScore == 1 || rightScore == 1)
+        if (leftScore == CONSTS::GAME::POINT_TO_WIN || rightScore == CONSTS::GAME::POINT_TO_WIN)
         {
             sceneManager.SetCurrentScene(Scenes::Score);
             UnloadTexture(backgroundText);
@@ -161,7 +156,7 @@ void Draw()
 
     case Scenes::Score:
 
-        if (leftScore == 1)
+        if (leftScore == CONSTS::GAME::POINT_TO_WIN)
         {
             DrawTextEx(ft1, "Left  Win", { 19 * unitX, 15 * unitY }, 7 * unitX, unitX, leftColor);
             DrawTextEx(ft1, "Press [Enter]", { 25 * unitX, 25 * unitY }, 2 * unitX, unitX, leftColor);
