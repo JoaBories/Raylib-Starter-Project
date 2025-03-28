@@ -11,10 +11,10 @@ using namespace std;
 int leftScore = 0;
 int rightScore = 0;
 
-float unitY = CONSTS::SCREEN::SIZE_X / 40;
-float unitX = CONSTS::SCREEN::SIZE_Y / 70;
+float unitY = CONSTS::SCREEN::SIZE_Y / 40;
+float unitX = CONSTS::SCREEN::SIZE_X / 70;
 
-Vector2 playableAreaSize = { 70*unitX, 40 * unitY };
+Vector2 playableAreaSize = { CONSTS::SCREEN::SIZE_X, CONSTS::SCREEN::SIZE_Y };
 Vector2 playableAreaPos = { 0, 0 };
 
 Color leftColor = RED;
@@ -30,8 +30,8 @@ Font ft2;
 
 Music music;
 
-Player leftPaddle = Player({ unitX * 2, unitY * 14 }, { unitX * 2, unitY * 10 }, 10, playableAreaPos, playableAreaSize, KEY_W, KEY_S, leftColor);
-Player rightPaddle = Player({ unitX * 66, unitY * 14 }, { unitX * 2, unitY * 10 }, 10, playableAreaPos, playableAreaSize, KEY_UP, KEY_DOWN, rightColor);
+Player leftPaddle = Player({ unitX * 2, unitY * 14 }, { unitX * 2, unitY * 10 }, playableAreaPos, playableAreaSize, KEY_W, KEY_S, leftColor);
+Player rightPaddle = Player({ unitX * 66, unitY * 14 }, { unitX * 2, unitY * 10 }, playableAreaPos, playableAreaSize, KEY_UP, KEY_DOWN, rightColor);
 Ball ball = Ball(playableAreaSize, playableAreaPos, &leftPaddle, &rightPaddle);
 
 void Init();
@@ -91,8 +91,8 @@ void Update()
             leftScore = 0;
             rightScore = 0;
 
-            leftPaddle = Player({ unitX * 2, unitY * 14 }, { unitX * 2, unitY * 10 }, 10, playableAreaPos, playableAreaSize, KEY_W, KEY_S, leftColor);
-            rightPaddle = Player({ unitX * 66, unitY * 14 }, { unitX * 2, unitY * 10 }, 10, playableAreaPos, playableAreaSize, KEY_UP, KEY_DOWN, rightColor);
+            leftPaddle = Player({ unitX * 2, unitY * 14 }, { unitX * 2, unitY * 10 }, playableAreaPos, playableAreaSize, KEY_W, KEY_S, leftColor);
+            rightPaddle = Player({ unitX * 66, unitY * 14 }, { unitX * 2, unitY * 10 }, playableAreaPos, playableAreaSize, KEY_UP, KEY_DOWN, rightColor);
             ball = Ball(playableAreaSize, playableAreaPos, &leftPaddle, &rightPaddle);
         }
         break;

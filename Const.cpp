@@ -13,6 +13,10 @@ namespace CONSTS
 		const int POINT_TO_WIN {9};
 	}
 
+	namespace PADDLE
+	{
+		const int SPEED {10};
+	}
 
 	namespace BALL
 	{

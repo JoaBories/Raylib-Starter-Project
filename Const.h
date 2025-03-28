@@ -13,6 +13,12 @@ namespace CONSTS
 		extern const int POINT_TO_WIN;
 	}
 
+	namespace PADDLE
+	{
+		extern const int SPEED;
+
+	}
+
 	namespace BALL 
 	{
 		extern const float SIZE;
